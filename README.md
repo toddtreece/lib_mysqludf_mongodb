@@ -8,25 +8,19 @@ The goal of the project is to allow MySQL triggers to store data in MongoDB.  By
 *  [MongoDB C Driver](http://www.mongodb.org/display/DOCS/C+Language+Center)
 
 ## Installation
-*  `gcc --std=c99 -shared -Wall -fPIC -I/usr/include/mysql \
-   -I/usr/local/lib/mongo-c-driver/src \
-   /usr/local/lib/mongo-c-driver/libmongoc.so \
-   /usr/local/lib/mongo-c-driver/libbson.so \
-   -o lib_mysqludf_mongodb.so lib_mysqludf_mongodb.c`
+*  `gcc --std=c99 -shared -Wall -fPIC -I/usr/include/mysql -I/usr/local/lib/mongo-c-driver/src /usr/local/lib/mongo-c-driver/libmongoc.so /usr/local/lib/mongo-c-driver/libbson.so -o lib_mysqludf_mongodb.so lib_mysqludf_mongodb.c`
 *  `sudo cp lib_mysqludf_mongodb.so /usr/lib/mysql/plugin/lib_mysqludf_mongodb.so`
 *  `sudo service mysql restart`
 
 ## Usage
-`
--- connect to mongoDB
--- this will only need to be called once
--- TODO accept arguments for different servers
-SELECT mongodb_connect();
+    -- connect to mongoDB
+    -- this will only need to be called once
+    -- TODO accept arguments for different servers
+    SELECT mongodb_connect();
 
--- sample query
-SELECT mongodb_save(firstname, lastname) FROM customers ORDER BY id DESC LIMIT 0,10;
+    -- sample query
+    SELECT mongodb_save(firstname, lastname) FROM customers ORDER BY id DESC LIMIT 0,10;
 
--- disconnect from mongoDB
-SELECT mongodb_disconnect();
-`
+    -- disconnect from mongoDB
+    SELECT mongodb_disconnect();
 
