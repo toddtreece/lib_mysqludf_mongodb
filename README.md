@@ -12,7 +12,7 @@ The goal of the project is to allow MySQL triggers to store data in MongoDB.  By
 ### Tested on Ubuntu Server 10.04.3 LTS x86_64
 * MongoDB version v1.2.2
 * MySQL version 5.1.41-3ubuntu12.10
-* Using gcc v4.4.3
+* gcc version 4.4.3
   
 
 ### Compiling lib_mysqludf_mongodb
@@ -21,15 +21,15 @@ The goal of the project is to allow MySQL triggers to store data in MongoDB.  By
 
 - - -
 
-      $ gcc --std=c99 -shared -Wall -fPIC \
-        -I/usr/include/mysql \
-        -I/usr/local/lib/mongo-c-driver/src \
-        /usr/local/lib/mongo-c-driver/libmongoc.so \
-        /usr/local/lib/mongo-c-driver/libbson.so \
-        -o lib_mysqludf_mongodb.so  \
-        lib_mysqludf_mongodb.c
-      $ sudo cp lib_mysqludf_mongodb.so /usr/lib/mysql/plugin/lib_mysqludf_mongodb.so
-      $ sudo service mysql restart
+    $ gcc --std=c99 -shared -Wall -fPIC \
+      -I/usr/include/mysql \
+      -I/usr/local/lib/mongo-c-driver/src \
+      /usr/local/lib/mongo-c-driver/libmongoc.so \
+      /usr/local/lib/mongo-c-driver/libbson.so \
+      -o lib_mysqludf_mongodb.so  \
+      lib_mysqludf_mongodb.c
+    $ sudo cp lib_mysqludf_mongodb.so /usr/lib/mysql/plugin/lib_mysqludf_mongodb.so
+    $ sudo service mysql restart
 
 ### Registering the UDF functions with MySQL
     USE mysql;
