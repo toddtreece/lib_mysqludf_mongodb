@@ -17,7 +17,13 @@ The goal of the project is to allow MySQL triggers to store data in MongoDB.  By
 * Use git to clone the Mongo C Driver repo into /usr/local/lib
 * Complile the latest version of MongoDB C Diver using the instructions provided [here](http://api.mongodb.org/c/current/building.html).  * Do not use v0.4 of the driver as the instructions state. Compile using HEAD. *
 
-    ~$ gcc --std=c99 -shared -Wall -fPIC -I/usr/include/mysql -I/usr/local/lib/mongo-c-driver/src /usr/local/lib/mongo-c-driver/libmongoc.so /usr/local/lib/mongo-c-driver/libbson.so -o lib_mysqludf_mongodb.so lib_mysqludf_mongodb.c
+    ~$ gcc --std=c99 -shared -Wall -fPIC \
+      -I/usr/include/mysql \
+      -I/usr/local/lib/mongo-c-driver/src \
+      /usr/local/lib/mongo-c-driver/libmongoc.so \
+      /usr/local/lib/mongo-c-driver/libbson.so \
+      -o lib_mysqludf_mongodb.so  \
+      lib_mysqludf_mongodb.c
     ~$ sudo cp lib_mysqludf_mongodb.so /usr/lib/mysql/plugin/lib_mysqludf_mongodb.so
     ~$ sudo service mysql restart
 
