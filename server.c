@@ -1,6 +1,6 @@
 #include "common.h"
 
-pthread_mutex_t mongodb_mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t mongodb_mutex;
 
 mongo mongodb_connection[1];
 
@@ -32,6 +32,8 @@ my_bool mongodb_connect_init(UDF_INIT *initid, UDF_ARGS *args, char *message) {
 long long mongodb_connect(UDF_INIT *initid, UDF_ARGS *args, char *result, unsigned long *length, char *is_null, char *error) {
   
   int rc;
+  
+  pthread_mutex_init(&mongodb_mutex, NULL);
 
   pthread_mutex_lock(&mongodb_mutex);
   
@@ -95,6 +97,8 @@ long long mongodb_disconnect(UDF_INIT *initid, UDF_ARGS *args, char *result, uns
   }
 
   pthread_mutex_unlock(&mongodb_mutex);
+
+  pthread_mutex_destroy(&mongodb_mutex);
 
   *is_null = 1;
   return 0;
