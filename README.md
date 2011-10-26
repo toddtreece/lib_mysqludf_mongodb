@@ -2,8 +2,6 @@
 
 The goal of the project is to allow MySQL triggers to store data in MongoDB.  By tracking MySQL inserts/updates/deletes will not cause the MySQL database to grow, which will make backing up system critical data faster and easier.
 
-**Disclaimer:** *I am not a C programmer, and this code is definitely not production ready.*
-
 ## Requirements
 *  [MongoDB C Driver](http://www.mongodb.org/display/DOCS/C+Language+Center)
 
@@ -26,19 +24,22 @@ The goal of the project is to allow MySQL triggers to store data in MongoDB.  By
       -I/usr/local/lib/mongo-c-driver/src \
       /usr/local/lib/mongo-c-driver/libmongoc.so \
       /usr/local/lib/mongo-c-driver/libbson.so \
+      server.c \
+      io.c \
+      version.c \
+      utf8.c \ 
       -o lib_mysqludf_mongodb.so  \
-      lib_mysqludf_mongodb.c
     $ sudo cp lib_mysqludf_mongodb.so /usr/lib/mysql/plugin/lib_mysqludf_mongodb.so
     $ sudo service mysql restart
 
 ### Registering the UDF functions with MySQL
     USE mysql;
-    DROP FUNCTION IF EXISTS lib_mysqludf_mongodb_info;
+    DROP FUNCTION IF EXISTS mongodb_version;
     DROP FUNCTION IF EXISTS mongodb_connect;
     DROP FUNCTION IF EXISTS mongodb_disconnect;
     DROP FUNCTION IF EXISTS mongodb_save;
 
-    CREATE FUNCTION lib_mysqludf_mongodb_info RETURNS STRING SONAME "lib_mysqludf_mongodb.so";
+    CREATE FUNCTION mongodb_version RETURNS STRING SONAME "lib_mysqludf_mongodb.so";
     CREATE FUNCTION mongodb_connect RETURNS STRING SONAME "lib_mysqludf_mongodb.so";
     CREATE FUNCTION mongodb_disconnect RETURNS STRING SONAME "lib_mysqludf_mongodb.so";
     CREATE FUNCTION mongodb_save RETURNS STRING SONAME "lib_mysqludf_mongodb.so";
@@ -46,11 +47,10 @@ The goal of the project is to allow MySQL triggers to store data in MongoDB.  By
 ## Usage
     -- connect to mongoDB
     -- this will only need to be called once
-    -- TODO accept arguments for different servers
-    SELECT mongodb_connect();
+    SELECT mongodb_connect("127.0.0.1", 27017);
 
     -- sample query
-    SELECT mongodb_save(firstname, lastname) FROM customers ORDER BY id DESC LIMIT 0,10;
+    SELECT mongodb_save('test.customers' AS 'collection', firstname, lastname) FROM customers ORDER BY id DESC LIMIT 0,10;
 
     -- mongodb insert from mysql trigger sample  --
     DELIMITER $$
@@ -62,6 +62,7 @@ The goal of the project is to allow MySQL triggers to store data in MongoDB.  By
       FOR EACH ROW BEGIN
       
         SELECT mongodb_save(
+          'test.customers.history' AS 'collection',
           NEW.id AS 'users_id',
           NEW.username AS 'username'
           NEW.firstname AS 'firstname', 
