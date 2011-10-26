@@ -1,6 +1,6 @@
 # lib_mysqludf_mongodb
 
-The goal of the project is to allow MySQL triggers to store data in MongoDB.  By tracking MySQL inserts/updates/deletes will not cause the MySQL database to grow, which will make backing up system critical data faster and easier.
+The goal of the project is to allow MySQL triggers to store data in MongoDB.  By tracking MySQL changes (inserts/updates/deletes) in MongoDB, backing up system critical data will become faster and easier.
 
 ## Requirements
 *  [MongoDB C Driver](http://www.mongodb.org/display/DOCS/C+Language+Center)
@@ -57,19 +57,21 @@ The goal of the project is to allow MySQL triggers to store data in MongoDB.  By
 
     DROP TRIGGER IF EXISTS mongodb_update_trigger $$
      
-    CREATE TRIGGER mongo_update_trigger BEFORE UPDATE ON users
+    CREATE TRIGGER mongodb_update_trigger BEFORE UPDATE ON users
       
       FOR EACH ROW BEGIN
       
-        SELECT mongodb_save(
-          'test.customers.history' AS 'collection',
-          NEW.id AS 'users_id',
-          NEW.username AS 'username'
-          NEW.firstname AS 'firstname', 
-          NEW.lastname  AS 'lastname',
-          NEW.email AS 'email',
-          'update' AS 'history_type',
-          NOW() AS 'timestamp'
+        SET @save = (
+          SELECT mongodb_save(
+            'test.users.history' AS 'collection',
+            NEW.id AS 'users_id',
+            NEW.username AS 'username',
+            NEW.firstname AS 'firstname', 
+            NEW.lastname  AS 'lastname',
+            NEW.email AS 'email',
+            'update' AS 'history_type',
+            NOW() AS 'timestamp'
+          )
         );
      
       END;
