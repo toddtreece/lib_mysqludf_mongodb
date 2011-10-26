@@ -1,3 +1,5 @@
+#ifndef MYSQLUDF_COMMON_H
+#define MYSQLUDF_COMMON_H
 #define DLLEXP
 
 #include <string.h>
@@ -22,4 +24,4 @@ typedef long long longlong;
 #define ERRMSG_SIZE 1000 
 
 extern mongo mongodb_connection[1];
-
+#endif /* MYSQLUDF_COMMON_H */
