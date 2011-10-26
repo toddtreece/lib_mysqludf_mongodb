@@ -22,24 +22,24 @@ The goal of the project is to allow MySQL triggers to store data in MongoDB.  By
     $ gcc --std=c99 -shared -Wall -fPIC \
       -I/usr/include/mysql \
       -I/usr/local/lib/mongo-c-driver/src \
-      /usr/local/lib/mongo-c-driver/libmongoc.so \
-      /usr/local/lib/mongo-c-driver/libbson.so \
+      /usr/lib/libmongoc.so \
+      /usr/lib/libbson.so \
       server.c \
       io.c \
       version.c \
-      utf8.c \ 
+      utf8.c \
       -o lib_mysqludf_mongodb.so
     $ sudo cp lib_mysqludf_mongodb.so /usr/lib/mysql/plugin/lib_mysqludf_mongodb.so
     $ sudo service mysql restart
 
 ### Registering the UDF functions with MySQL
     USE mysql;
-    DROP FUNCTION IF EXISTS mongodb_version;
+    DROP FUNCTION IF EXISTS mongodb_udf_version;
     DROP FUNCTION IF EXISTS mongodb_connect;
     DROP FUNCTION IF EXISTS mongodb_disconnect;
     DROP FUNCTION IF EXISTS mongodb_save;
 
-    CREATE FUNCTION mongodb_version RETURNS STRING SONAME "lib_mysqludf_mongodb.so";
+    CREATE FUNCTION mongodb_udf_version RETURNS STRING SONAME "lib_mysqludf_mongodb.so";
     CREATE FUNCTION mongodb_connect RETURNS STRING SONAME "lib_mysqludf_mongodb.so";
     CREATE FUNCTION mongodb_disconnect RETURNS STRING SONAME "lib_mysqludf_mongodb.so";
     CREATE FUNCTION mongodb_save RETURNS STRING SONAME "lib_mysqludf_mongodb.so";
