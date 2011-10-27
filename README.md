@@ -4,6 +4,7 @@ The goal of the project is to allow MySQL triggers to store data in MongoDB.  By
 
 ## Requirements
 *  [MongoDB C Driver](http://www.mongodb.org/display/DOCS/C+Language+Center)
+*  libmysql-dev
 
 ## Installation
 
