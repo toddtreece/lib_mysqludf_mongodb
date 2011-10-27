@@ -55,11 +55,25 @@ long long mongodb_save(UDF_INIT *initid, UDF_ARGS *args, char *result, unsigned 
     if (args->args[i]) {
 
       if (args->arg_type[i] == STRING_RESULT || args->arg_type[i] == DECIMAL_RESULT) {
-        
+
         //args array is not null terminated by default
         args->args[i][args->lengths[i]] = '\0';
-        
-        bson_append_string(b, args->attributes[i],utf8_encode(args->args[i]));
+
+        if(strcmp(args->args[i], "NULL") == 0 || args->lengths[i] == 0) {
+
+          bson_append_null(b, args->attributes[i]);
+
+        } else {
+
+          char *item;
+
+          item = utf8_encode(args->args[i]);
+          
+          bson_append_string(b, args->attributes[i],item);
+
+          free(item);
+
+        }
 
       } else if (args->arg_type[i] == INT_RESULT) {
 

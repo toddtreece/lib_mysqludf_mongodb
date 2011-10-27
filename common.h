@@ -14,7 +14,7 @@ typedef long long longlong;
 #include <mysql.h>
 
 #include "mongo.h"
-#include "utf8.h"
+#include "encodings.h"
 
 #define VERSION_STRING "1.0"
 #define VERSION_STRING_LENGTH 3
