@@ -4,6 +4,8 @@ pthread_mutex_t mongodb_mutex;
 
 mongo mongodb_connection[1];
 
+int init = 0;
+
 my_bool mongodb_connect_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
 long long mongodb_connect(UDF_INIT *initid, UDF_ARGS *args, char *result, unsigned long *length, char *is_null, char *error);
 
@@ -33,7 +35,11 @@ long long mongodb_connect(UDF_INIT *initid, UDF_ARGS *args, char *result, unsign
   
   int rc;
   
+  mongo_init(mongodb_connection);
+  
   pthread_mutex_init(&mongodb_mutex, NULL);
+
+  init = 1;
 
   pthread_mutex_lock(&mongodb_mutex);
   
@@ -85,6 +91,12 @@ my_bool mongodb_disconnect_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 }
 
 long long mongodb_disconnect(UDF_INIT *initid, UDF_ARGS *args, char *result, unsigned long *length, char *is_null, char *error) {
+
+  if(init == 0) {
+    fprintf(stderr, "mongodb connection was not initialized.\n");
+    *error = 1;
+    return 0;
+  }
   
   pthread_mutex_lock(&mongodb_mutex);
   

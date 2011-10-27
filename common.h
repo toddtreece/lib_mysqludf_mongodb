@@ -22,5 +22,6 @@ typedef long long longlong;
 
 extern pthread_mutex_t mongodb_mutex;
 extern mongo mongodb_connection[1];
+extern int init;
 
 #endif /* MYSQLUDF_COMMON_H */

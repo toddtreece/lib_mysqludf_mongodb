@@ -21,6 +21,11 @@ my_bool mongodb_save_init(UDF_INIT *initid, UDF_ARGS *args, char *message) {
 
 long long mongodb_save(UDF_INIT *initid, UDF_ARGS *args, char *result, unsigned long *length, char *is_null, char *error) {
   
+  if(init == 0) {
+    fprintf(stderr, "mongodb connection was not initialized.\n");
+    *error = 1;
+    return 0;
+  }
 
   pthread_mutex_lock(&mongodb_mutex);
 
