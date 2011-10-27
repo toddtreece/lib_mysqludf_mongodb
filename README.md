@@ -28,7 +28,7 @@ The goal of the project is to allow MySQL triggers to store data in MongoDB.  By
       server.c \
       io.c \
       version.c \
-      utf8.c \
+      encodings.c \
       -o lib_mysqludf_mongodb.so
     $ sudo cp lib_mysqludf_mongodb.so /usr/lib/mysql/plugin/lib_mysqludf_mongodb.so
     $ sudo service mysql restart
