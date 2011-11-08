@@ -1,5 +1,22 @@
 # lib_mysqludf_mongodb
 
+lib_mysqludf_mongodb
+Copyright 2011 Todd Treece
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see [http://www.gnu.org/licenses/](http://www.gnu.org/licenses/).
+
+## Hunh?
 The goal of the project is to allow MySQL triggers to store data in MongoDB.  By tracking MySQL changes (inserts/updates/deletes) in MongoDB, backing up system critical data will become faster and easier.
 
 ## Requirements
@@ -46,8 +63,14 @@ The goal of the project is to allow MySQL triggers to store data in MongoDB.  By
     CREATE FUNCTION mongodb_save RETURNS STRING SONAME "lib_mysqludf_mongodb.so";
 
 ## Usage
-    -- connect to mongoDB
+    -- connecting to mongoDB:
     -- this will only need to be called once
+    -- and can be placed in a mysql startup script.
+    --
+    -- in my.cnf add a line in the [mysqld] block
+    -- that points to your startup script.
+    -- i.e. init-file = /var/lib/mysql/init.sql
+
     SELECT mongodb_connect("127.0.0.1", 27017);
 
     -- sample query
@@ -64,8 +87,8 @@ The goal of the project is to allow MySQL triggers to store data in MongoDB.  By
       
         SET @save = (
           SELECT mongodb_save(
-            'test.users.history' AS 'collection',
-            NEW.id AS 'users_id',
+            'history.users' AS 'collection',
+            NEW.id AS 'id',
             NEW.username AS 'username',
             NEW.firstname AS 'firstname', 
             NEW.lastname  AS 'lastname',
