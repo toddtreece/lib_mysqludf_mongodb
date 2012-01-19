@@ -37,8 +37,7 @@ long long mongodb_save(UDF_INIT *initid, UDF_ARGS *args, char *result, unsigned 
   }
 
   pthread_mutex_unlock(&mongodb_mutex);
-  
-  
+
   bson b[1];
 
   // the first argument is reserved
@@ -68,7 +67,7 @@ long long mongodb_save(UDF_INIT *initid, UDF_ARGS *args, char *result, unsigned 
 
         } else {
 
-          char *item;
+          char *item = NULL;
 
           item = utf8_encode(args->args[i]);
           
@@ -111,7 +110,7 @@ long long mongodb_save(UDF_INIT *initid, UDF_ARGS *args, char *result, unsigned 
 
   bson_finish(b);
 
-  pthread_mutex_lock(&mongodb_mutex);
+  pthread_mutex_lock(&mongodb_mutex);  
 
   if(mongo_insert(mongodb_connection, args->args[0], b) == MONGO_ERROR && mongodb_connection->err == MONGO_IO_ERROR) {
     
@@ -121,7 +120,7 @@ long long mongodb_save(UDF_INIT *initid, UDF_ARGS *args, char *result, unsigned 
 
   }
 
-  pthread_mutex_unlock(&mongodb_mutex);
+  pthread_mutex_unlock(&mongodb_mutex);    
 
   bson_destroy(b);
 

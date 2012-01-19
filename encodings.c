@@ -103,7 +103,7 @@ static char* convert(const char* src, int src_len, int *new_len, const char* fro
 /* returns a new string that must be freed */
 char* utf8_encode(const char *str) {
 
-  char *out;
+  char *out = NULL;
 
   if(strlen(str)) {
     int alen, len;
@@ -118,7 +118,7 @@ char* utf8_encode(const char *str) {
 /* returns a new string, possibly decoded */
 char* utf8_decode(const char *str) {
   
-  char *out;
+  char *out = NULL;
 
   if (strlen(str)) {
     int alen, len;
