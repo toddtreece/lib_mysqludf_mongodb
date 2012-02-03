@@ -2,38 +2,7 @@
 
 #define MYSQLUDF_SERVER_H
 
-#include <pthread.h>
-#include <semaphore.h>
 #include "common.h"
-
-FILE *log_file;
-
-// TYPE DEFINITIONS
-typedef struct job_type {
-  UDF_ARGS          *args;
-  struct job_type   *next;
-  struct job_type   *prev;
-} job_type;
-
-typedef struct queue_type {
-  int       count;
-  job_type  *start;
-  job_type  *end;
-  sem_t     *semaphore;
-} queue_type;
-
-typedef struct pool_type {
-  int         count;
-  pthread_t   *threads;
-  queue_type  *queue;
-} pool_type;
-
-typedef struct thread_type {                            
-  pthread_mutex_t   *connection_mutex;
-  pool_type         *pool;
-} thread_type;
-
-
 
 // INIT FUNCTIONS
 pool_type* pool_init(int thread_count);
@@ -46,11 +15,11 @@ my_bool mongodb_disconnect_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 
 
 // CONNECTION FUNCTIONS
-void connect(UDF_ARGS *args);
+void mdb_connect(UDF_ARGS *args);
 
-void insert(UDF_ARGS *args);
+void mdb_insert(UDF_ARGS *args);
 
-void disconnect();
+void mdb_disconnect();
 
 
 // UDF FUNCTIONS

@@ -1,4 +1,4 @@
-#include "common.h"
+#include "io.h"
 
 my_bool mongodb_save_init(UDF_INIT *initid, UDF_ARGS *args, char *message) {
   
@@ -17,8 +17,8 @@ my_bool mongodb_save_init(UDF_INIT *initid, UDF_ARGS *args, char *message) {
 }
 
 long long mongodb_save(UDF_INIT *initid, UDF_ARGS *args, char *result, unsigned long *length, char *is_null, char *error) {
-  
-  pool_push(connection_pool, args);;
+ 
+  pool_push(connection_pool, args);
 
   *is_null = 1;
   return 0;

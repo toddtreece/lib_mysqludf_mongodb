@@ -1,7 +1,6 @@
-#include "common.h"
 #include "server.h"
 
-FILE *stderr;
+FILE *log_file;
 static int pool_keepalive = 1;
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t iconv_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -99,7 +98,7 @@ my_bool mongodb_disconnect_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 
 
 // CONNECTION FUNCTIONS
-void connect(UDF_ARGS *args) {
+void mdb_connect(UDF_ARGS *args) {
 
   int i,status;
 
@@ -145,10 +144,17 @@ void connect(UDF_ARGS *args) {
 
 }
 
-void insert(UDF_ARGS *args) {
+void mdb_insert(UDF_ARGS *args) {
 
-  int thread = (int)pthread_self();
-  
+  int i, thread = 0;
+
+  for(i = 0; i < NUMBER_OF_THREADS; i++) {
+    
+    if(pthread_equal(connection_pool->threads[i],pthread_self()))
+      thread = i;
+    
+  }
+
   if(mdb[thread].init == 0)
     fprintf(stderr, "mongodb connection was not initialized.\n");
 
@@ -160,7 +166,7 @@ void insert(UDF_ARGS *args) {
   // the first argument is reserved
   // for the collection name, so start
   // the loop at 1.
-  int i = 1;
+  i = 1;
 
   bson_init(b);
 
@@ -184,17 +190,13 @@ void insert(UDF_ARGS *args) {
 
         } else {
           
-          pthread_mutex_lock(&iconv_mutex);
+          char *item = NULL;
 
-            char *item = NULL;
+          item = utf8_encode(args->args[i]);
+          
+          bson_append_string(b, args->attributes[i], item);
 
-            item = utf8_encode(args->args[i]);
-            
-            bson_append_string(b, args->attributes[i], item);
-
-            free(item);
-
-          pthread_mutex_unlock(&iconv_mutex);
+          free(item);
 
         }
 
@@ -242,7 +244,7 @@ void insert(UDF_ARGS *args) {
 
 }
 
-void disconnect() {
+void mdb_disconnect() {
 
   int i;
 
@@ -265,7 +267,7 @@ void disconnect() {
 // UDF FUNCTIONS
 long long mongodb_connect(UDF_INIT *initid, UDF_ARGS *args, char *result, unsigned long *length, char *is_null, char *error) {
   
-  connect(args);
+  mdb_connect(args);
 
   *is_null = 1;
   return 0;
@@ -274,7 +276,7 @@ long long mongodb_connect(UDF_INIT *initid, UDF_ARGS *args, char *result, unsign
 
 long long mongodb_disconnect(UDF_INIT *initid, UDF_ARGS *args, char *result, unsigned long *length, char *is_null, char *error) {
 
-  disconnect();
+  mdb_disconnect();
 
   *is_null = 1;
   return 0;
@@ -284,7 +286,7 @@ long long mongodb_disconnect(UDF_INIT *initid, UDF_ARGS *args, char *result, uns
 
 
 // QUEUE FUNCTIONS
-void queue_push(pool_type *pool, job_type *job) {
+void queue_push(pool_type *pool, job_type *job) { 
 
   job->next = NULL;
   job->prev = NULL;
@@ -394,9 +396,9 @@ void *pool_run(void *p) {
 
         queue_pop(pool);
 
-        insert(arg_buff);      
-
       pthread_mutex_unlock(&mutex);
+        
+      mdb_insert(arg_buff);      
 
       free(job);
 
@@ -413,7 +415,7 @@ void *pool_run(void *p) {
 }
 
 int pool_push(pool_type *pool, UDF_ARGS *args){
-  
+
   job_type *job;
 
   job = (job_type*)malloc(sizeof(job_type));
@@ -430,7 +432,7 @@ int pool_push(pool_type *pool, UDF_ARGS *args){
     queue_push(pool, job);
   
   pthread_mutex_unlock(&mutex);
-
+  
   return 0;
 
 }
